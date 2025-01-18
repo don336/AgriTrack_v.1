@@ -10,5 +10,5 @@ export interface ButtonProps
   isLoading?: boolean;
   variant: "primary" | "secondary" | "outline";
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }
