@@ -7,10 +7,6 @@ import CustomButton from "../CustomButton/CustomButton";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isLoading, setIsloading] = useState<boolean>(true);
-  const handleClick = () => {
-    console.log("handle click", "=============>");
-  };
 
   return (
     <nav className=" backdrop-blur-sm sticky top-0 z-50  w-full">
@@ -32,8 +28,6 @@ const Navbar: React.FC = () => {
             <CustomButton
               className="px-7 py-1  rounded-full bg-[#48623F] text-white font-medium hover:bg-green-600/30 transition-colors duration-200"
               variant="primary"
-              onClick={handleClick}
-              isLoading={isLoading}
             >
               <Link to="/login">LOGIN</Link>
             </CustomButton>
