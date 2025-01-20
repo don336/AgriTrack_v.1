@@ -13,7 +13,7 @@ module.exports = {
         Roboto_condensed: ["Roboto Condensed", "sans-serif"],
       },
       backgroundImage: {
-        "hero-pattern": "url('/african_woman.jpg')",
+        "hero-pattern": "url('/african-man-harvesting-vegetables.jpg')",
       },
     }, // Customize your theme here
   },

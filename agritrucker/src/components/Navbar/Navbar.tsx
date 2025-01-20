@@ -24,6 +24,7 @@ const Navbar: React.FC = () => {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/dashboard">Dashboard</NavLink>
             <NavLink to="/sales">Sales</NavLink>
+            <NavLink to="/crops">Crops</NavLink>
 
             <CustomButton
               className="px-7 py-1  rounded-full bg-[#48623F] text-white font-medium hover:bg-green-600/30 transition-colors duration-200"

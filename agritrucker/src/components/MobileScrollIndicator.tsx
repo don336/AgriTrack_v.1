@@ -1,5 +1,3 @@
-import React from "react";
-
 const MobileScrollIndicator = () => {
   return (
     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 animate-bounce hidden sm:block">
