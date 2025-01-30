@@ -111,7 +111,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <div className="w-full  space-y-6 px-10 py-10 mx-auto font-Roboto_condensed items-center">
+      <div className="w-full  space-y-6 px-20 py-10 mx-auto font-Roboto_condensed items-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 leading-tight">
           Transforming{" "}
           <span className="text-green-600">
