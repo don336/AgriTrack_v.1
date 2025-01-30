@@ -1,8 +1,8 @@
 const StatusBar = () => {
   return (
-    <div className="bg-[#ECECEC] w-full px-4 py-8 sm:py-10 md:py-12">
+    <div className="flex flex-col bg-[#ECECEC] w-full px-4 py-8 sm:py-10 md:py-12 mx-auto">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-12 text-slate-800 font-Roboto_condensed">
           {/* Years of Experience */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black">

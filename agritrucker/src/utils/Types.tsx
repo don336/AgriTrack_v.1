@@ -12,3 +12,11 @@ export interface ButtonProps
   children: React.ReactNode;
   onClick?: () => void;
 }
+
+export interface userDataType {
+  firstName: String;
+  email: String;
+  lastName: String;
+  phone: String;
+  password: String;
+}
