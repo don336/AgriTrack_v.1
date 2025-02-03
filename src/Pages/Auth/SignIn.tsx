@@ -1,19 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMailSharp } from "react-icons/io5";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import { useAppDispatch, useAppSelector } from "../../utils/Redux/store";
+import { Login } from "./AuthReduxHandler/authService";
+import { userDataType } from "../../utils/Types";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  const dispatch = useAppDispatch();
+  const authState = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  useEffect(() => {
+    if (authState?.isAuthenticated) {
+      navigate("/dashboard");
+    }
+    if (authState?.error) {
+      alert(authState.error);
+      window.location.reload();
+    }
+  }, [authState]);
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
+    const { email, password } = formData;
+    const UserData: userDataType = {
+      email,
+      password,
+    };
+
+    dispatch(Login(UserData));
   };
 
   const handleChange = (e: { target: { name: any; value: any } }) => {

@@ -17,3 +17,16 @@ export const register = createAsyncThunk(
     }
   }
 );
+export const Login = createAsyncThunk(
+  "login",
+  async (data: userDataType, thunkAPI) => {
+    try {
+      const response = await axios.post(`${baseUrl}auth/signin`, data);
+      const { accessToken } = response.data;
+      localStorage.setItem("jwt_Token", accessToken);
+      return jwtDecode(accessToken);
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);

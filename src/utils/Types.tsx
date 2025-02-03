@@ -14,9 +14,9 @@ export interface ButtonProps
 }
 
 export interface userDataType {
-  firstName: String;
+  firstName?: String;
   email: String;
-  lastName: String;
-  phone: String;
+  lastName?: String;
+  phone?: String;
   password: String;
 }
