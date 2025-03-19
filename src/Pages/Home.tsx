@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import CustomButton from "../components/CustomButton/CustomButton";
 import Footer from "../components/Footer";
 import MobileScrollIndicator from "../components/MobileScrollIndicator";
@@ -65,7 +66,7 @@ const Home = () => {
                     variant="primary"
                     className="w-full sm:w-44 text-sm sm:text-base"
                   >
-                    GET STARTED
+                    <Link to="/register"> GET STARTED</Link>
                   </CustomButton>
                   <CustomButton
                     variant="outline"

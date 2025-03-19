@@ -5,6 +5,8 @@ import SignUp from "./Pages/Auth/SignUp";
 import SignIn from "./Pages/Auth/SignIn";
 import { store } from "./utils/Redux/store";
 import { Provider } from "react-redux";
+import Dashboard from "./Pages/Dashboard/Dashboard";
+import Crops from "./Pages/Crops/Crops";
 
 const App = () => {
   return (
@@ -14,6 +16,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/login" element={<SignIn />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/crops" element={<Crops />} />
         </Routes>
       </Router>
     </Provider>
