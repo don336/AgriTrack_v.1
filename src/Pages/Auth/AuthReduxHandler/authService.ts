@@ -8,7 +8,9 @@ export const register = createAsyncThunk(
   "register",
   async (data: userDataType, thunkAPI) => {
     try {
-      const response = await axios.post(`${baseUrl}auth/signup`, data);
+      const response = await axios.post(`${baseUrl}auth/signup`, data, {
+        withCredentials: true,
+      });
       const { accessToken } = response.data;
       localStorage.setItem("jwt_Token", accessToken);
       return jwtDecode(accessToken);

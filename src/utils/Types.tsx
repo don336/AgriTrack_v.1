@@ -43,9 +43,44 @@ export interface CardProps {
 export interface cropDataType {
   name: string;
   variety: string;
-  plantingDate: Date;
-  harvestDate: Date;
+  plantingDate: string;
+  harvestDate: string;
   quantity: number;
   status: string;
   notes: string;
+  fieldName: string;
+  area: number;
+}
+
+export interface Crop {
+  _id: string;
+  name: string;
+  variety: string;
+  plantingDate: string;
+  harvestDate: string;
+  fieldName: string;
+  area: number;
+  quantity: number;
+  status: string;
+  notes: string;
+}
+
+export interface SortConfig {
+  key: keyof Crop | null;
+  direction: "ascending" | "descending";
+}
+
+export interface SalesInterface {
+  id: number;
+
+  crop_name: string;
+  customer_name: string;
+  customer_contact: string;
+  quantity: number; // in kg
+  unit_price: number; // per kg
+  total_price: number;
+  sale_date: string;
+  payment_method: string;
+  notes: string;
+  salesperson_id: number;
 }

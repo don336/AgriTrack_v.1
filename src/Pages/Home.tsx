@@ -102,7 +102,6 @@ const Home = () => {
             technology to create sustainable and efficient farming methods for
             the next generation.
           </p>
-
           <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-lg">
             <img
               src="/african_woman.jpg"
@@ -112,15 +111,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <div className="w-full  space-y-6 px-20 py-10 mx-auto font-Roboto_condensed items-center">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 leading-tight">
-          Transforming{" "}
-          <span className="text-green-600">
-            agriculture with smart solutions for a sustainable
-          </span>{" "}
-          future
-        </h2>
-      </div>
 
       <section className="w-full bg-slate-50 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">

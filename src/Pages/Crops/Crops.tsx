@@ -10,131 +10,58 @@ import {
   FaSeedling,
   FaCloudSun,
   FaFilter,
-  FaFileExport,
   FaTable,
 } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../utils/Redux/store";
+import { Crop, SortConfig } from "../../utils/Types";
+import { deleteCrop, getCrops } from "./CropReduxHandler/CropService";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer";
+import UpdateModal from "../../components/UpdateCropModel";
 
 // Define TypeScript interfaces
-interface Crop {
-  id: number;
-  name: string;
-  variety: string;
-  plantingDate: string;
-  harvestDate: string;
-  field: string;
-  area: number;
-  yield: number;
-  status: "Planned" | "Planted" | "Growing" | "Ready to Harvest" | "Harvested";
-}
-
-interface SortConfig {
-  key: keyof Crop | null;
-  direction: "ascending" | "descending";
-}
 
 const CropsPage: React.FC = () => {
   // Sample crops data
-  const initialCrops: Crop[] = [
-    {
-      id: 1,
-      name: "Corn",
-      variety: "Sweet Corn",
-      plantingDate: "2025-03-01",
-      harvestDate: "2025-07-15",
-      field: "North Field",
-      area: 5.2,
-      yield: 42.3,
-      status: "Growing",
-    },
-    {
-      id: 2,
-      name: "Wheat",
-      variety: "Hard Red",
-      plantingDate: "2024-10-15",
-      harvestDate: "2025-06-20",
-      field: "East Field",
-      area: 8.7,
-      yield: 52.1,
-      status: "Growing",
-    },
-    {
-      id: 3,
-      name: "Soybeans",
-      variety: "Williams 82",
-      plantingDate: "2025-05-01",
-      harvestDate: "2025-10-10",
-      field: "South Field",
-      area: 6.4,
-      yield: 0,
-      status: "Planned",
-    },
-    {
-      id: 4,
-      name: "Potatoes",
-      variety: "Russet",
-      plantingDate: "2025-04-10",
-      harvestDate: "2025-08-15",
-      field: "West Field",
-      area: 3.1,
-      yield: 0,
-      status: "Planted",
-    },
-    {
-      id: 5,
-      name: "Tomatoes",
-      variety: "Roma",
-      plantingDate: "2025-04-01",
-      harvestDate: "2025-07-30",
-      field: "Greenhouse 1",
-      area: 0.5,
-      yield: 0,
-      status: "Planted",
-    },
-    {
-      id: 6,
-      name: "Lettuce",
-      variety: "Butterhead",
-      plantingDate: "2025-03-15",
-      harvestDate: "2025-05-10",
-      field: "Greenhouse 2",
-      area: 0.3,
-      yield: 0,
-      status: "Ready to Harvest",
-    },
-    {
-      id: 7,
-      name: "Carrots",
-      variety: "Nantes",
-      plantingDate: "2025-02-20",
-      harvestDate: "2025-05-25",
-      field: "South Field",
-      area: 1.2,
-      yield: 0,
-      status: "Growing",
-    },
-    {
-      id: 8,
-      name: "Rice",
-      variety: "Jasmine",
-      plantingDate: "2025-05-10",
-      harvestDate: "2025-09-20",
-      field: "Paddy Field",
-      area: 4.6,
-      yield: 0,
-      status: "Planned",
-    },
-  ];
 
-  const [crops, setCrops] = useState<Crop[]>(initialCrops);
-  const [filteredCrops, setFilteredCrops] = useState<Crop[]>(initialCrops);
+  const [crops, setCrops] = useState<Crop[]>([]);
+  const [updateCrop, setUpdateCrop] = useState({
+    name: "",
+    variety: "",
+    plantingDate: Date(),
+    harvestDate: Date(),
+    fieldName: "",
+    area: 0,
+    quantity: 0,
+    status: "",
+    notes: "",
+    _id: "",
+  });
+  const [filteredCrops, setFilteredCrops] = useState<Crop[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [openModal, setOpenModel] = useState<boolean>(false);
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: null,
     direction: "ascending",
   });
+  const dispatch = useAppDispatch();
+  const cropState = useAppSelector((state) => state.crop);
+  const authState = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+  // Get CROPS data from the server
+  useEffect(() => {
+    if (!authState.isAuthenticated) {
+      navigate("/login");
+    }
+    const cropsData = localStorage.getItem("crops");
+
+    if (cropsData) {
+      setCrops(JSON.parse(cropsData));
+    }
+    dispatch(getCrops());
+  }, [authState.isAuthenticated, navigate, dispatch, cropState.crops.length]);
 
   // Filter crops based on search term and status filter
   useEffect(() => {
@@ -145,7 +72,7 @@ const CropsPage: React.FC = () => {
         (crop) =>
           crop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           crop.variety.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          crop.field.toLowerCase().includes(searchTerm.toLowerCase())
+          crop.fieldName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -154,7 +81,7 @@ const CropsPage: React.FC = () => {
     }
 
     setFilteredCrops(result);
-  }, [crops, searchTerm, statusFilter]);
+  }, [crops, searchTerm, statusFilter, cropState]);
 
   // Sort function
   const requestSort = (key: keyof Crop) => {
@@ -188,7 +115,7 @@ const CropsPage: React.FC = () => {
         return "bg-blue-200";
       case "Growing":
         return "bg-green-200";
-      case "Ready to Harvest":
+      case "Ready":
         return "bg-yellow-200";
       case "Harvested":
         return "bg-purple-200";
@@ -202,6 +129,36 @@ const CropsPage: React.FC = () => {
     return filteredCrops.reduce((sum, crop) => sum + crop.area, 0).toFixed(1);
   };
 
+  const handleDelete = (id: string) => {
+    // Add delete functionality
+    const deletecrop = dispatch(deleteCrop(id));
+    if (deletecrop.requestId) {
+      setCrops(crops.filter((crop) => crop._id !== id));
+      window.alert("Crop deleted successfully");
+    }
+    console.log(id);
+  };
+
+  const handleModel = (crop: Crop) => {
+    setOpenModel(true);
+    setUpdateCrop(crop);
+  };
+  const handleCloseModal = () => {
+    setOpenModel(false);
+    setUpdateCrop({
+      name: "",
+      variety: "",
+      plantingDate: Date(),
+      harvestDate: Date(),
+      fieldName: "",
+      area: 0,
+      quantity: 0,
+      status: "",
+      notes: "",
+      _id: "",
+    });
+  };
+
   return (
     <>
       <div className="bg-gray-800">
@@ -213,9 +170,12 @@ const CropsPage: React.FC = () => {
             <FaSeedling className="mr-2 " /> Crops Management
           </h1>
           <div className="flex space-x-2">
-            <button className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center">
+            <Link
+              to="/add-crop"
+              className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center"
+            >
               <FaPlus className="mr-2" /> Add Crop
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -243,7 +203,7 @@ const CropsPage: React.FC = () => {
                   <option value="Planned">Planned</option>
                   <option value="Planted">Planted</option>
                   <option value="Growing">Growing</option>
-                  <option value="Ready to Harvest">Ready to Harvest</option>
+                  <option value="Ready">Ready </option>
                   <option value="Harvested">Harvested</option>
                 </select>
               </div>
@@ -306,7 +266,7 @@ const CropsPage: React.FC = () => {
                         ))}
                     </div>
                   </th>
-                  <th className="py-3 px-6 text-left">Yield (acre)</th>
+                  <th className="py-3 px-6 text-left">quantity (acre)</th>
                   <th
                     className="py-3 px-6 text-left cursor-pointer"
                     onClick={() => requestSort("status")}
@@ -327,7 +287,7 @@ const CropsPage: React.FC = () => {
               <tbody className="text-gray-600 text-sm">
                 {filteredCrops.map((crop) => (
                   <tr
-                    key={crop.id}
+                    key={crop._id}
                     className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     <td className="py-3 px-6 text-left whitespace-nowrap">
@@ -339,12 +299,10 @@ const CropsPage: React.FC = () => {
                     <td className="py-3 px-6 text-left">{crop.variety}</td>
                     <td className="py-3 px-6 text-left">{crop.plantingDate}</td>
                     <td className="py-3 px-6 text-left">{crop.harvestDate}</td>
-                    <td className="py-3 px-6 text-left">{crop.field}</td>
+                    <td className="py-3 px-6 text-left">{crop.fieldName}</td>
+                    <td className="py-3 px-6 text-left">{crop.area}</td>
                     <td className="py-3 px-6 text-left">
-                      {crop.area.toFixed(1)}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {crop.yield > 0 ? crop.yield.toFixed(1) : "-"}
+                      {crop.quantity > 0 ? crop.quantity.toFixed(1) : "-"}
                     </td>
                     <td className="py-3 px-6 text-left">
                       <span
@@ -355,8 +313,19 @@ const CropsPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-6 text-center">
                       <div className="flex item-center justify-center space-x-3">
-                        <FaEdit className="text-blue-600 hover:text-blue-800 cursor-pointer" />
-                        <FaTrash className="text-red-600 hover:text-red-800 cursor-pointer" />
+                        <FaEdit
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                          onClick={() => handleModel(crop)}
+                        />
+                        <FaTrash
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                          onClick={() => handleDelete(crop._id)}
+                        />
+                        <UpdateModal
+                          openModal={openModal}
+                          onClose={() => handleCloseModal()}
+                          crop={updateCrop}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -378,30 +347,26 @@ const CropsPage: React.FC = () => {
               <FaCloudSun className="mr-2" /> Status Overview
             </h2>
             <div className="space-y-3">
-              {[
-                "Planned",
-                "Planted",
-                "Growing",
-                "Ready to Harvest",
-                "Harvested",
-              ].map((status) => {
-                const count = crops.filter(
-                  (crop) => crop.status === status
-                ).length;
-                const percentage =
-                  Math.round((count / crops.length) * 100) || 0;
-                return (
-                  <div key={status} className="flex items-center">
-                    <span
-                      className={`${getStatusColor(status as Crop["status"])} w-3 h-3 rounded-full mr-2`}
-                    ></span>
-                    <span className="text-gray-700 flex-1">{status}</span>
-                    <span className="text-gray-600">
-                      {count} crops ({percentage}%)
-                    </span>
-                  </div>
-                );
-              })}
+              {["Planned", "Planted", "Growing", "Ready", "Harvested"].map(
+                (status) => {
+                  const count = crops.filter(
+                    (crop) => crop.status === status
+                  ).length;
+                  const percentage =
+                    Math.round((count / crops.length) * 100) || 0;
+                  return (
+                    <div key={status} className="flex items-center">
+                      <span
+                        className={`${getStatusColor(status as Crop["status"])} w-3 h-3 rounded-full mr-2`}
+                      ></span>
+                      <span className="text-gray-700 flex-1">{status}</span>
+                      <span className="text-gray-600">
+                        {count} crops ({percentage}%)
+                      </span>
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
 
@@ -410,10 +375,10 @@ const CropsPage: React.FC = () => {
               Field Distribution
             </h2>
             <div className="space-y-3">
-              {Array.from(new Set(crops.map((crop) => crop.field))).map(
+              {Array.from(new Set(crops.map((crop) => crop.fieldName))).map(
                 (field) => {
                   const fieldCrops = crops.filter(
-                    (crop) => crop.field === field
+                    (crop) => crop.fieldName === field
                   );
                   const area = fieldCrops
                     .reduce((sum, crop) => sum + crop.area, 0)
@@ -438,9 +403,7 @@ const CropsPage: React.FC = () => {
             <div className="space-y-4">
               {crops
                 .filter(
-                  (crop) =>
-                    crop.status === "Growing" ||
-                    crop.status === "Ready to Harvest"
+                  (crop) => crop.status === "Growing" || crop.status === "Ready"
                 )
                 .sort(
                   (a, b) =>
@@ -450,14 +413,14 @@ const CropsPage: React.FC = () => {
                 .slice(0, 5)
                 .map((crop) => (
                   <div
-                    key={crop.id}
+                    key={crop._id}
                     className="border-b border-gray-100 pb-3 last:border-0"
                   >
                     <div className="font-medium">
                       {crop.name} ({crop.variety})
                     </div>
                     <div className="text-sm text-gray-500">
-                      Harvest: {crop.harvestDate} | {crop.field}
+                      Harvest: {crop.harvestDate} | {crop.fieldName}
                     </div>
                   </div>
                 ))}

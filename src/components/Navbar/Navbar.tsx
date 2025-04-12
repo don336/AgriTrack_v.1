@@ -25,6 +25,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     await localStorage.removeItem("jwt_Token");
+    await localStorage.removeItem("crops");
     window.location.reload();
   };
 
