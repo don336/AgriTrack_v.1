@@ -36,6 +36,10 @@ const SignUpPage = () => {
     if (authState?.isAuthenticated) {
       navigate("/dashboard");
     }
+    if (authState?.error) {
+      alert(authState.error);
+      window.location.reload();
+    }
   }, [authState]);
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
