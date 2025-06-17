@@ -1,7 +1,7 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { baseUrl } from "../../../config/client";
-import { Crop, cropDataType } from "../../../utils/Types";
+import { cropDataType } from "../../../utils/Types";
 
 export const addCrop = createAsyncThunk(
   "addCrop",
@@ -21,7 +21,7 @@ export const addCrop = createAsyncThunk(
 );
 export const updateCrop = createAsyncThunk(
   "updateCrop",
-  async (data: Crop, thunkAPI) => {
+  async (data: cropDataType, thunkAPI) => {
     try {
       const testToken = localStorage.getItem("jwt_Token");
       const response = await axios.put(

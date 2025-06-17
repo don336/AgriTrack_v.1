@@ -1,12 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../../Pages/Auth/AuthReduxHandler/authSlice";
 import cropReducer from "../../Pages/Crops/CropReduxHandler/CropSlice";
+import saleReducer from "../../Pages/Sales/SalesReduxHandler/salesSlice";
+
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     crop: cropReducer,
+    sales: saleReducer,
   },
 });
 

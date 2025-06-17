@@ -41,6 +41,7 @@ export interface CardProps {
 }
 
 export interface cropDataType {
+  _id?: string;
   name: string;
   variety: string;
   plantingDate: string;
@@ -50,29 +51,15 @@ export interface cropDataType {
   notes: string;
   fieldName: string;
   area: number;
-}
-
-export interface Crop {
-  _id: string;
-  name: string;
-  variety: string;
-  plantingDate: string;
-  harvestDate: string;
-  fieldName: string;
-  area: number;
-  quantity: number;
-  status: string;
-  notes: string;
 }
 
 export interface SortConfig {
-  key: keyof Crop | null;
+  key: keyof cropDataType | null;
   direction: "ascending" | "descending";
 }
 
 export interface SalesInterface {
-  id: number;
-
+  _id?: number;
   crop_name: string;
   customer_name: string;
   customer_contact: string;
@@ -82,5 +69,5 @@ export interface SalesInterface {
   sale_date: string;
   payment_method: string;
   notes: string;
-  salesperson_id: number;
+  salesperson_id?: number;
 }

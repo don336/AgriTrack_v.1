@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../utils/Redux/store";
-import { Crop, SortConfig } from "../../utils/Types";
+import { cropDataType, SortConfig } from "../../utils/Types";
 import { deleteCrop, getCrops } from "./CropReduxHandler/CropService";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer";
@@ -25,20 +25,9 @@ import UpdateModal from "../../components/UpdateCropModel";
 const CropsPage: React.FC = () => {
   // Sample crops data
 
-  const [crops, setCrops] = useState<Crop[]>([]);
-  const [updateCrop, setUpdateCrop] = useState({
-    name: "",
-    variety: "",
-    plantingDate: Date(),
-    harvestDate: Date(),
-    fieldName: "",
-    area: 0,
-    quantity: 0,
-    status: "",
-    notes: "",
-    _id: "",
-  });
-  const [filteredCrops, setFilteredCrops] = useState<Crop[]>([]);
+  const [crops, setCrops] = useState<cropDataType[]>([]);
+  const [updateCrop, setUpdateCrop] = useState<cropDataType[]>();
+  const [filteredCrops, setFilteredCrops] = useState<cropDataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openModal, setOpenModel] = useState<boolean>(false);
   const [statusFilter, setStatusFilter] = useState<string>("All");
@@ -84,7 +73,7 @@ const CropsPage: React.FC = () => {
   }, [crops, searchTerm, statusFilter, cropState]);
 
   // Sort function
-  const requestSort = (key: keyof Crop) => {
+  const requestSort = (key: keyof cropDataType) => {
     let direction: "ascending" | "descending" = "ascending";
 
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -107,7 +96,7 @@ const CropsPage: React.FC = () => {
   };
 
   // Get the appropriate status color
-  const getStatusColor = (status: Crop["status"]) => {
+  const getStatusColor = (status: cropDataType["status"]) => {
     switch (status) {
       case "Planned":
         return "bg-gray-200";
@@ -139,7 +128,7 @@ const CropsPage: React.FC = () => {
     console.log(id);
   };
 
-  const handleModel = (crop: Crop) => {
+  const handleModel = (crop: cropDataType) => {
     setOpenModel(true);
     setUpdateCrop(crop);
   };
@@ -148,8 +137,8 @@ const CropsPage: React.FC = () => {
     setUpdateCrop({
       name: "",
       variety: "",
-      plantingDate: Date(),
-      harvestDate: Date(),
+      plantingDate: "",
+      harvestDate: "",
       fieldName: "",
       area: 0,
       quantity: 0,

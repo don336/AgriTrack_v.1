@@ -10,6 +10,8 @@ import Crops from "./Pages/Crops/Crops";
 import AddCrop from "./Pages/Crops/AddCrop";
 import Sales from "./Pages/Sales/Sales";
 
+import AddSaleComp from "./Pages/Sales/AddSale/AddSale";
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -22,6 +24,7 @@ const App = () => {
           <Route path="/crops" element={<Crops />} />
           <Route path="/add-crop" element={<AddCrop />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/add-sale" element={<AddSaleComp />} />
         </Routes>
       </Router>
     </Provider>
