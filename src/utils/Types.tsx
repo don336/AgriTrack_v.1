@@ -59,7 +59,7 @@ export interface SortConfig {
 }
 
 export interface SalesInterface {
-  _id?: number;
+  _id?: string;
   crop_name: string;
   customer_name: string;
   customer_contact: string;
@@ -70,4 +70,15 @@ export interface SalesInterface {
   payment_method: string;
   notes: string;
   salesperson_id?: number;
+}
+
+export interface FieldConfig {
+  label: string;
+  name: string;
+  type: "text" | "number" | "date" | "select" | "radio" | "textarea";
+  icon?: React.ReactNode;
+  options?: string[]; // For select/radio
+  placeholder?: string;
+  step?: string;
+  min?: string;
 }

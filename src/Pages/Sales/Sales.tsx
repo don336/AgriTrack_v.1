@@ -14,11 +14,28 @@ import { useAppDispatch, useAppSelector } from "../../utils/Redux/store";
 import { Link, useNavigate } from "react-router-dom";
 import { SalesInterface, SortConfig } from "../../utils/Types";
 import { GetSales } from "./SalesReduxHandler/saleService";
+import Footer from "../../components/Footer";
+import UpdateModal from "../../components/UpdateModel";
+import { salesField } from "../../utils/constants";
 
 const Sales = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSale, setFilteredSales] = useState<SalesInterface[]>([]);
   const [sales, setSales] = useState<SalesInterface[]>([]);
+  const [saleToBeUpdated, setSaleToBeUpdated] = useState<SalesInterface>({
+    crop_name: "",
+    customer_name: "",
+    customer_contact: "",
+    quantity: 0,
+    unit_price: 0,
+    total_price: 0,
+    sale_date: "",
+    payment_method: "",
+    notes: "",
+    _id: "",
+  });
+
+  const [openModel, setOpenModel] = useState(false);
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: null,
@@ -35,8 +52,11 @@ const Sales = () => {
     setSortConfig({ key, direction });
 
     const sortedSales = [...filteredSale].sort((a, b) => {
-      if (a[key]! < b[key]!) return direction === "ascending" ? -1 : 1;
-      if (a[key]! > b[key]!) return direction === "ascending" ? 1 : -1;
+      const valA = a[key] ?? "";
+      const valB = b[key] ?? "";
+
+      if (valA < valB) return direction === "ascending" ? -1 : 1;
+      if (valA > valB) return direction === "ascending" ? 1 : -1;
       return 0;
     });
 
@@ -51,32 +71,56 @@ const Sales = () => {
   useEffect(() => {
     if (!authState.isAuthenticated) {
       navigate("/login");
+    } else {
+      dispatch(GetSales());
     }
-
-    dispatch(GetSales()); // ✅ correct invocation
-  }, [authState.isAuthenticated]);
+  }, [authState.isAuthenticated, dispatch, navigate]);
 
   useEffect(() => {
-    if (salesData) {
-      setSales(salesData.sales); // ✅ don't merge object into array
+    if (salesData?.sales) {
+      setSales(salesData.sales);
     }
   }, [salesData]);
 
   useEffect(() => {
-    let result = [...(sales || [])];
+    let result = [...sales];
 
     if (searchTerm) {
+      const lowerTerm = searchTerm.toLowerCase();
       result = result.filter(
         (sale) =>
-          sale.crop_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          sale.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          sale.customer_contact.includes(searchTerm.toLowerCase()) ||
-          sale.payment_method.toLowerCase().includes(searchTerm.toLowerCase())
+          sale.crop_name.toLowerCase().includes(lowerTerm) ||
+          sale.customer_name.toLowerCase().includes(lowerTerm) ||
+          sale.customer_contact.includes(lowerTerm) ||
+          sale.payment_method.toLowerCase().includes(lowerTerm)
       );
     }
 
     setFilteredSales(result);
   }, [sales, searchTerm]);
+
+  const handleEdit = (sale: SalesInterface) => {
+    setOpenModel(true);
+    setSaleToBeUpdated(sale);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModel(false);
+    setSaleToBeUpdated({
+      crop_name: "",
+      customer_name: "",
+      customer_contact: "",
+      quantity: 0,
+      unit_price: 0,
+      total_price: 0,
+      sale_date: "",
+      payment_method: "",
+      notes: "",
+      _id: "",
+    });
+  };
+
+  const handleDelete = () => {};
 
   return (
     <>
@@ -148,29 +192,13 @@ const Sales = () => {
                     className="py-3 px-6 text-left cursor-pointer"
                     onClick={() => requestSort("unit_price")}
                   >
-                    <div className="flex items-center">
-                      Unit Price
-                      {sortConfig.key === "unit_price" &&
-                        (sortConfig.direction === "ascending" ? (
-                          <FaSortAmountUp className="ml-1" />
-                        ) : (
-                          <FaSortAmountDown className="ml-1" />
-                        ))}
-                    </div>
+                    Unit Price
                   </th>
                   <th
                     className="py-3 px-6 text-left cursor-pointer"
                     onClick={() => requestSort("total_price")}
                   >
-                    <div className="flex items-center">
-                      Total Price
-                      {sortConfig.key === "total_price" &&
-                        (sortConfig.direction === "ascending" ? (
-                          <FaSortAmountUp className="ml-1" />
-                        ) : (
-                          <FaSortAmountDown className="ml-1" />
-                        ))}
-                    </div>
+                    Total Price
                   </th>
                   <th className="py-3 px-6 text-left">Payment Method</th>
                   <th className="py-3 px-6 text-left">Notes</th>
@@ -183,28 +211,38 @@ const Sales = () => {
                     key={sale._id}
                     className="border-b border-gray-200 hover:bg-gray-100"
                   >
-                    <td className="py-3 px-6 text-left">
-                      {sale.customer_name}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {sale.customer_contact}
-                    </td>
-                    <td className="py-3 px-6 text-left">{sale.crop_name}</td>
-                    <td className="py-3 px-6 text-left">{sale.quantity} kg</td>
-                    <td className="py-3 px-6 text-left">
-                      USD {sale.unit_price} /kg
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      USD {sale.total_price}
-                    </td>
-                    <td className="py-3 px-6 text-left">
-                      {sale.payment_method}
-                    </td>
-                    <td className="py-3 px-6 text-left">{sale.notes}</td>
+                    <td className="py-3 px-6">{sale.customer_name}</td>
+                    <td className="py-3 px-6">{sale.customer_contact}</td>
+                    <td className="py-3 px-6">{sale.crop_name}</td>
+                    <td className="py-3 px-6">{sale.quantity} kg</td>
+                    <td className="py-3 px-6">USD {sale.unit_price} /kg</td>
+                    <td className="py-3 px-6">USD {sale.total_price}</td>
+                    <td className="py-3 px-6">{sale.payment_method}</td>
+                    <td className="py-3 px-6">{sale.notes}</td>
                     <td className="py-3 px-6 text-center">
-                      <div className="flex item-center justify-center space-x-3">
-                        <FaEdit className="text-blue-600 hover:text-blue-800 cursor-pointer" />
-                        <FaTrash className="text-red-600 hover:text-red-800 cursor-pointer" />
+                      <div className="flex justify-center space-x-3">
+                        <FaEdit
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                          onClick={() => handleEdit(sale)}
+                        />
+                        <FaTrash
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                          onClick={handleDelete}
+                        />
+
+                        <UpdateModal
+                          onClose={handleCloseModal}
+                          entity={saleToBeUpdated}
+                          openModal={openModel}
+                          fields={salesField}
+                          title="Edit Sale"
+                          onSubmit={async (sale) => {
+                            console.log(sale, "123456");
+                            // await dispatch(updateCrop(crop));
+                            // await dispatch(getCrops());
+                            // window.location.reload();
+                          }}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -214,6 +252,7 @@ const Sales = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

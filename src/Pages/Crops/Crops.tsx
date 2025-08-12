@@ -15,10 +15,15 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../utils/Redux/store";
 import { cropDataType, SortConfig } from "../../utils/Types";
-import { deleteCrop, getCrops } from "./CropReduxHandler/CropService";
+import {
+  deleteCrop,
+  getCrops,
+  updateCrop,
+} from "./CropReduxHandler/CropService";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer";
-import UpdateModal from "../../components/UpdateCropModel";
+import UpdateModal from "../../components/UpdateModel";
+import { cropFields } from "../../utils/constants";
 
 // Define TypeScript interfaces
 
@@ -26,7 +31,18 @@ const CropsPage: React.FC = () => {
   // Sample crops data
 
   const [crops, setCrops] = useState<cropDataType[]>([]);
-  const [updateCrop, setUpdateCrop] = useState<cropDataType[]>();
+  const [updatedCrop, setUpdateCrop] = useState<cropDataType>({
+    name: "",
+    variety: "",
+    plantingDate: "",
+    harvestDate: "",
+    fieldName: "",
+    area: 0,
+    quantity: 0,
+    status: "",
+    notes: "",
+    _id: "",
+  });
   const [filteredCrops, setFilteredCrops] = useState<cropDataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openModal, setOpenModel] = useState<boolean>(false);
@@ -308,12 +324,19 @@ const CropsPage: React.FC = () => {
                         />
                         <FaTrash
                           className="text-red-600 hover:text-red-800 cursor-pointer"
-                          onClick={() => handleDelete(crop._id)}
+                          onClick={() => handleDelete(crop._id || "")}
                         />
                         <UpdateModal
+                          entity={updatedCrop}
+                          onClose={handleCloseModal}
                           openModal={openModal}
-                          onClose={() => handleCloseModal()}
-                          crop={updateCrop}
+                          onSubmit={async (crop) => {
+                            await dispatch(updateCrop(crop));
+                            await dispatch(getCrops());
+                            window.location.reload();
+                          }}
+                          fields={cropFields}
+                          title="Edit Crop"
                         />
                       </div>
                     </td>
@@ -346,7 +369,7 @@ const CropsPage: React.FC = () => {
                   return (
                     <div key={status} className="flex items-center">
                       <span
-                        className={`${getStatusColor(status as Crop["status"])} w-3 h-3 rounded-full mr-2`}
+                        className={`${getStatusColor(status as cropDataType["status"])} w-3 h-3 rounded-full mr-2`}
                       ></span>
                       <span className="text-gray-700 flex-1">{status}</span>
                       <span className="text-gray-600">
